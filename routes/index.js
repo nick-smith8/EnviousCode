@@ -24,6 +24,10 @@ router.get('/adduser', function(req, res) {
   res.render('adduser', { title: 'Add New User' });
 });
 
+router.get('/EnviousOnline', function(req, res) {
+  res.render('game.jade');
+});
+
 router.post('/addusersubmit', function(req, res) {
     var db = req.db;
     var userName = req.body.username;

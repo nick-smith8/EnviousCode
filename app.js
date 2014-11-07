@@ -1,5 +1,7 @@
 var express = require('express');
 var path = require('path');
+
+
 //var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -12,6 +14,7 @@ var monk = require('monk');
 var db = monk('localhost:27017/eonline');
 
 var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
