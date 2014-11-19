@@ -50,6 +50,7 @@ var reset = function () {
 
 // Update game objects
 var update = function (modifier) {
+	
 	if (38 in keysDown) { // Player holding up
 		spaceship.y -= spaceship.speed * modifier;
 	}
@@ -62,6 +63,10 @@ var update = function (modifier) {
 	if (39 in keysDown) { // Player holding right
 		spaceship.x += spaceship.speed * modifier;
 	}
+	if (32 in keysDown){
+		spaceship.x = canvas.width / 2;
+		spaceship.y = canvas.height / 2;
+		}
 
 	
 };
