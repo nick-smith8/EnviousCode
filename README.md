@@ -37,7 +37,8 @@ Server hosts at [104.131.30.31](http://104.131.30.31/)
 
 
 ## Coming soon
-* Using npm [forever](https://github.com/nodejitsu/forever) script on the server to manage the web app
-* Starting with the actual project
+* Fixing issues with Nginx
+* Adding UI skeleton
+* Sockets???
 
 More to come. Promise!
