@@ -2,6 +2,8 @@ doctype html
 html
   head
     title Envious Online
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='#{basedir}/css/style.css')
   body
     block content
+    script(src='http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js')
+    script(src='#{basedir}/js/global.js')
