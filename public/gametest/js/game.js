@@ -1,8 +1,8 @@
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
-canvas.width = 512;
-canvas.height = 480;
+canvas.width = 1400;
+canvas.height = 650;
 document.body.appendChild(canvas);
 
 // Background image
@@ -22,11 +22,22 @@ spaceshipImage.onload = function () {
 spaceshipImage.src = "images/ship2.png";
 
 
+// spaceship image for top player
+
+var spaceshiptopReady = false;
+var spaceshiptopImage = new Image();
+spaceshiptopImage.onload = function () {
+	spaceshiptopReady = true;
+};
+spaceshiptopImage.src = "images/ship3.png";
+
 // Game objects
 var spaceship = {
 	speed: 256 // movement in pixels per second
 };
-
+var spaceshiptop = {
+	speed: 256 // movement in pixels per second
+};
 
 // Handle keyboard controls
 var keysDown = {};
@@ -42,7 +53,7 @@ addEventListener("keyup", function (e) {
 // Reset the game when the player catches a monster
 var reset = function () {
 	spaceship.x = canvas.width / 2;
-	spaceship.y = canvas.height / 2;
+	spaceshiptop.x = canvas.width / 2;
 
 	// Throw the monster somewhere on the screen randomly
 	
@@ -52,10 +63,10 @@ var reset = function () {
 var update = function (modifier) {
 	
 	if (38 in keysDown) { // Player holding up
-		spaceship.y -= spaceship.speed * modifier;
+		spaceshiptop.x -= spaceshiptop.speed * modifier;
 	}
 	if (40 in keysDown) { // Player holding down
-		spaceship.y += spaceship.speed * modifier;
+		spaceshiptop.x += spaceshiptop.speed * modifier;
 	}
 	if (37 in keysDown) { // Player holding left
 		spaceship.x -= spaceship.speed * modifier;
@@ -78,7 +89,10 @@ var render = function () {
 	}
 
 	if (spaceshipReady) {
-		ctx.drawImage(spaceshipImage, spaceship.x, spaceship.y);
+		ctx.drawImage(spaceshipImage, spaceship.x, 573);
+	}
+	if (spaceshiptopReady) {
+		ctx.drawImage(spaceshiptopImage, spaceshiptop.x, 0);
 	}
 
 
