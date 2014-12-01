@@ -53,10 +53,11 @@ var spaceship = {
 var spaceshiptop = {
 	speed: 256 // movement in pixels per second
 };
-var shot1 = {
+var shot = {
 };
-var shottop1 = {
+var shottop = {
 };
+
 // Handle keyboard controls
 var keysDown = {};
 
@@ -72,6 +73,8 @@ addEventListener("keyup", function (e) {
 var reset = function () {
 	spaceship.x = canvas.width / 2;
 	spaceshiptop.x = canvas.width / 2;
+	shot.y = 573;
+	shottop.y = 0;
 };
 
 // Update game objects
@@ -90,15 +93,12 @@ var update = function (modifier) {
 		spaceship.x += spaceship.speed * modifier;
 	}
 	if (32 in keysDown){
-		counter = 0;
-		shot = true;
-		for(i = 0;i < 400; i++){
-			counter+=1;}
+		shot.y -= spaceship.speed * modifier;
+		
 	}
 	if (86 in keysDown){
-		counter = 0;
-		shottop = true;
-		counter += 100;
+		shottop.y += spaceship.speed * modifier;
+		
 	}
 
 	
@@ -114,23 +114,25 @@ var render = function () {
 
 	}
 	if (spaceshiptopReady) {
+		
 		ctx.drawImage(spaceshiptopImage, spaceshiptop.x, 0);
 	}
 	if (shot){
-		for(i = 550;i > 0; i--){
-		ctx.drawImage(shotImage,spaceship.x+16, i);
-		}
+		
+		ctx.drawImage(shotImage,spaceship.x+16, shot.y);
+		shot.x = spaceship.x+16;
+		
 	}
 	if (shottop){
-		for(i = 80;i < 573; i++){
-		ctx.drawImage(shotImage,spaceshiptop.x+16, i);
-		}
-		console.log(shot1.y);
-		if(shot1.y == 573){
-			alert("Hit");
-		}
-	}
 
+		ctx.drawImage(shotImage,spaceshiptop.x+16, shottop.y);
+		shottop.x = spaceshiptop.x+16;	
+	}
+	
+
+	if(shottop.y > 560 && shottop.y < 600 && (shottop.x-16) < (spaceship.x+5) && (shottop.x-16) > (spaceship.x-5)){alert("Hit");}
+	console.log(shot.y);
+	if(shot.y < 30 && shottop.y > -10 && (shot.x-16) < (spaceshiptop.x+5) && (shot.x-16) > (spaceshiptop.x-5)){alert("Hit");}
 
 };
 
