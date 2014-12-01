@@ -5,6 +5,12 @@ canvas.width = 1400;
 canvas.height = 650;
 document.body.appendChild(canvas);
 
+//Variable declarations
+//For if top or bot ship is hit
+var hittop = false;
+var hitbot = false;
+
+
 // Background image
 var bgReady = false;
 var bgImage = new Image();
@@ -23,13 +29,22 @@ spaceshipImage.src = "images/ship2.png";
 
 
 // spaceship image for top player
-
 var spaceshiptopReady = false;
 var spaceshiptopImage = new Image();
 spaceshiptopImage.onload = function () {
 	spaceshiptopReady = true;
 };
 spaceshiptopImage.src = "images/ship3.png";
+
+var shot = false;
+var shottop = false;
+
+var shotImage = new Image();
+shotImage.onload = function () {
+	console.log("This is used for debugging");
+};
+shotImage.src = "images/shot.png";
+
 
 // Game objects
 var spaceship = {
@@ -38,7 +53,12 @@ var spaceship = {
 var spaceshiptop = {
 	speed: 256 // movement in pixels per second
 };
-
+var shot1 = {
+	// movement in pixels per second
+};
+var shottop1 = {
+	 // movement in pixels per second
+};
 // Handle keyboard controls
 var keysDown = {};
 
@@ -50,13 +70,10 @@ addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
 
-// Reset the game when the player catches a monster
+// Reset the game 
 var reset = function () {
 	spaceship.x = canvas.width / 2;
 	spaceshiptop.x = canvas.width / 2;
-
-	// Throw the monster somewhere on the screen randomly
-	
 };
 
 // Update game objects
@@ -75,9 +92,12 @@ var update = function (modifier) {
 		spaceship.x += spaceship.speed * modifier;
 	}
 	if (32 in keysDown){
-		spaceship.x = canvas.width / 2;
-		spaceship.y = canvas.height / 2;
-		}
+		shot = true;
+	}
+	if (86 in keysDown){
+		shottop = true;
+	}
+
 
 	
 };
@@ -87,12 +107,19 @@ var render = function () {
 	if (bgReady) {
 		ctx.drawImage(bgImage, 0, 0);
 	}
-
 	if (spaceshipReady) {
 		ctx.drawImage(spaceshipImage, spaceship.x, 573);
 	}
 	if (spaceshiptopReady) {
 		ctx.drawImage(spaceshiptopImage, spaceshiptop.x, 0);
+	}
+	if (shot){
+		ctx.drawImage(shotImage,spaceship.x+2, 100);
+			
+	}
+	if (shottop){
+		ctx.drawImage(shotImage,spaceshiptop.x+2, 400);
+		
 	}
 
 
