@@ -9,7 +9,7 @@ document.body.appendChild(canvas);
 //For if top or bot ship is hit
 var hittop = false;
 var hitbot = false;
-
+var counter = 0;
 
 // Background image
 var bgReady = false;
@@ -54,10 +54,8 @@ var spaceshiptop = {
 	speed: 256 // movement in pixels per second
 };
 var shot1 = {
-	// movement in pixels per second
 };
 var shottop1 = {
-	 // movement in pixels per second
 };
 // Handle keyboard controls
 var keysDown = {};
@@ -92,12 +90,16 @@ var update = function (modifier) {
 		spaceship.x += spaceship.speed * modifier;
 	}
 	if (32 in keysDown){
+		counter = 0;
 		shot = true;
+		for(i = 0;i < 400; i++){
+			counter+=1;}
 	}
 	if (86 in keysDown){
+		counter = 0;
 		shottop = true;
+		counter += 100;
 	}
-
 
 	
 };
@@ -109,17 +111,24 @@ var render = function () {
 	}
 	if (spaceshipReady) {
 		ctx.drawImage(spaceshipImage, spaceship.x, 573);
+
 	}
 	if (spaceshiptopReady) {
 		ctx.drawImage(spaceshiptopImage, spaceshiptop.x, 0);
 	}
 	if (shot){
-		ctx.drawImage(shotImage,spaceship.x+2, 100);
-			
+		for(i = 550;i > 0; i--){
+		ctx.drawImage(shotImage,spaceship.x+16, i);
+		}
 	}
 	if (shottop){
-		ctx.drawImage(shotImage,spaceshiptop.x+2, 400);
-		
+		for(i = 80;i < 573; i++){
+		ctx.drawImage(shotImage,spaceshiptop.x+16, i);
+		}
+		console.log(shot1.y);
+		if(shot1.y == 573){
+			alert("Hit");
+		}
 	}
 
 
