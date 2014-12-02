@@ -92,25 +92,44 @@ var update = function (modifier) {
 
 	
 	if (38 in keysDown) { // Player holding up
+		if((spaceshiptop.x - spaceshiptop.speed * modifier) < 0){
+		}
+		else{
 		spaceshiptop.x -= spaceshiptop.speed * modifier;
+		}
 	}
 	if (40 in keysDown) { // Player holding down
+		if((spaceshiptop.x + spaceshiptop.speed * modifier) > 1360){
+
+		}
+		else{
 		spaceshiptop.x += spaceshiptop.speed * modifier;
+		}
 	}
 	if (37 in keysDown) { // Player holding left
+		if((spaceship.x - spaceship.speed * modifier) < 0){
+
+		}
+		else{
 		spaceship.x -= spaceship.speed * modifier;
+		}
 	}
 	if (39 in keysDown) { // Player holding right
+		
+		if((spaceship.x + spaceship.speed * modifier) > 1360){
+
+		}
+		else{
 		spaceship.x += spaceship.speed * modifier;
+		}	
 	}
 	if (32 in keysDown){
 
-		if (spacePressed == false && topshots.length < 1) {
+		if (spacePressed == false && topshots.length < 3) {
 			var shotty = {}
 			shotty.y = 573
 			shotty.x = spaceship.x
 			topshots.push(shotty)
-			
 		}
 	}
 
@@ -119,7 +138,7 @@ var update = function (modifier) {
 	}
 	if (86 in keysDown){
 
-		if (vPressed == false && botshots.length < 1) {
+		if (vPressed == false && botshots.length < 3) {
 			
 			var shottytop = {}
 			shottytop.y = 0
