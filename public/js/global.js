@@ -4,7 +4,7 @@ var highscoreData = [];
 //Working on how to fix this issue...
 $(document).ready(function() {
 	var tableContent = '';
-	$.getJSON( '/ftaylor/users/get_highscores', function(data) {
+	$.getJSON( 'users/get_highscores', function(data) {
 		highscoreData = data;
 		$.each(data, function() {
 			tableContent += '<tr>';
@@ -16,3 +16,11 @@ $(document).ready(function() {
 		$('#highscore table tbody').html(tableContent);
 	});
 });
+
+
+$('#login').submit(function(event) {
+  event.preventDefault();
+
+});
+
+
