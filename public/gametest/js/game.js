@@ -10,7 +10,7 @@ document.body.appendChild(canvas);
 var hittop = false;
 var hitbot = false;
 var counter = 0;
-var ifShotsFired = false
+
 // Background image
 var bgReady = false;
 var bgImage = new Image();
@@ -42,6 +42,11 @@ shotImage.onload = function () {
 };
 shotImage.src = "images/shot.png";
 
+var explosionImage = new Image();
+explosionImage.onload = function () {
+	console.log("This is to see if the explosion loaded");
+};
+explosionImage.src = "images/explosion.png";
 
 // Game objects
 var spaceship = {
@@ -52,6 +57,8 @@ var spaceshiptop = {
 };
 
 var topshots = []
+var botshots = []
+
 var shot = {};
 var shottop = {};
 
@@ -65,7 +72,10 @@ addEventListener("keydown", function (e) {
 addEventListener("keyup", function (e) {
 	delete keysDown[e.keyCode];
 }, false);
+
+var vPressed = false;
 var spacePressed = false;
+
 // Reset the game 
 var reset = function () {
 	spaceship.x = canvas.width / 2;
@@ -73,7 +83,9 @@ var reset = function () {
 	shot.y = 573;
 	shottop.y = 0;
 };
-topshots.push(shottop)
+
+
+
 // Update game objects
 var update = function (modifier) {
 
@@ -92,42 +104,66 @@ var update = function (modifier) {
 		spaceship.x += spaceship.speed * modifier;
 	}
 	if (32 in keysDown){
-		if (spacePressed == false) {
+
+		if (spacePressed == false && topshots.length < 1) {
 			var shotty = {}
 			shotty.y = 573
 			shotty.x = spaceship.x
 			topshots.push(shotty)
+			
 		}
-
-		
-	
-		
 	}
 
 	if (32 in keysDown) {
-		spacePressed= false;
+		spacePressed = false;
 	}
 	if (86 in keysDown){
-		shottop.y += spaceship.speed * modifier;
+
+		if (vPressed == false && botshots.length < 1) {
+			
+			var shottytop = {}
+			shottytop.y = 0
+			shottytop.x = spaceshiptop.x
+			botshots.push(shottytop)
+			
+		}
 		
 	}
+	if (86 in keysDown) {
+		vPressed = false;
+	}
+
+	// For shots coming from the bottom ship
 
 	var newtopshots = []; //create new array to remove elemets outside of screen
 
 	topshots.forEach(function(shotter) {
 
-		shotter.y-=16;
+		shotter.y-=20;
 
 		if (shotter.y > 0)
+			//console.log(shotter.y);
 			newtopshots.push(shotter)
-		
-
 	})
 
 	topshots = newtopshots
 
 
-	
+    // For shots coming from the top ship
+
+	var newbotshots = []; //create new array to remove elemets outside of screen
+
+	botshots.forEach(function(shottertop) {
+
+		shottertop.y+=20;
+
+		if (shottertop.y < 650)
+			//console.log(shotter.y);
+			newbotshots.push(shottertop)
+	})
+
+	botshots = newbotshots
+
 };
 
 // Draw everything
@@ -145,21 +181,30 @@ var render = function () {
 	}
 	//for each loop to draw each shot
 	topshots.forEach(function(shotter) {
-		console.log(shotter.y);
-		ctx.drawImage(shotImage,shotter.x-16, shotter.y);
+		//console.log(shotter.x);
+		//console.log(spaceshiptop.x);
+		ctx.drawImage(shotImage,shotter.x+16, shotter.y);
+
+		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){
+
+			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
+			alert("Game over Bottom wins")
+			console.log("Hit");
+		}
 	});
 
+	botshots.forEach(function(shottertop) {
+		
+		ctx.drawImage(shotImage,shottertop.x+16, shottertop.y);
+		if(shottertop.y > 560 && shottertop.y < 600 && (shottertop.x) < (spaceship.x+10) && (shottertop.x) > (spaceship.x-10)){ 
 
-	if (shottop){
-
-		ctx.drawImage(shotImage,spaceshiptop.x+16, shottop.y);
-		shottop.x = spaceshiptop.x+16;	
-	}
-	
-
-	if(shottop.y > 560 && shottop.y < 600 && (shottop.x-16) < (spaceship.x+5) && (shottop.x-16) > (spaceship.x-5)){alert("Hit");}
-	
-	if(shot.y < 30 && shottop.y > -10 && (shot.x-16) < (spaceshiptop.x+5) && (shot.x-16) > (spaceshiptop.x-5)){alert("Hit");}
+			ctx.drawImage(explosionImage,spaceship.x,shottertop.y);
+			console.log(shottertop.y);
+			console.log(spaceship.x)
+			alert("Game over top wins")
+			console.log("Hit");
+		}
+	});
 
 };
 
