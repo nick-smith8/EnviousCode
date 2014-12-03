@@ -1,7 +1,4 @@
-var highscoreData = [];
 
-
-//Working on how to fix this issue...
 $(document).ready(function() {
 	var tableContent = '';
 	$.getJSON( 'users/get_highscores', function(data) {
@@ -17,10 +14,20 @@ $(document).ready(function() {
 	});
 });
 
-
-$('#login').submit(function(event) {
+//Confirm login
+$('.login-submit').click(function(event) {
   event.preventDefault();
-
+  //Post go here
+  alert("BOO");
 });
 
+//Confirm new account
+$('.create-submit').click(function(event) {
+	event.preventDefault();
+	//Post go here
+
+	$.post( 'users/create_account', {name: "Falcon"}, function(data) {
+		alert(data);
+	});
+})
 

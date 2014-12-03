@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  div(class="create-screen")
+    div(class="title") 
+      |Create Account
+    div(class="createform")
+      div(class="text username")
+        label Username: 
+        input(type="text", id="newuser")
+      div(class="text password")
+        label Password: 
+        input(type="text", id="newpass1")
+      div(class="text password")
+        label Confirm Password: 
+        input(type="password", id="newpass2")
+      button(class="btn center create-submit") Submit

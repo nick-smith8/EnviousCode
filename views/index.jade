@@ -2,13 +2,15 @@ extends layout
 title= title
 
 block content
-  h1 Envious Online
-  form(id="login", class="loginform")
-    |  Username: 
-    input(type="text", id="user")
-    |<br><br>  Password: 
-    input(type="password", id="pass")
-    |<br><br>
-    input(type="submit", value="Log In")
-    |<br><br><br>
-  input(type="submit", value="Create Account")
+  div(class="intro-screen")
+    div(class="title") 
+      |Envious Online
+    div(class="loginform")
+      div(class="text username")
+        label Username: 
+        input(type="text", id="user")
+      div(class="text password")
+        label Password: 
+        input(type="password", id="pass")
+      button(class="btn left login-submit") Log In
+      button(class="btn right create-account") Create Account

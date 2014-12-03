@@ -6,6 +6,10 @@ router.get('/', function(req, res) {
   res.render('index', {});
 });
 
+router.get('/create', function(req, res) {
+  res.render('create_account', {});
+});
+
 router.get('/table', function(req, res) {
   res.render('table', { title: 'Envious Online' });
 });
