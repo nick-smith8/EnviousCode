@@ -16,6 +16,7 @@ a {
     width: 48%;
     height: 80px;
     margin-bottom: 0;
+    margin-top: 20px;
     color: #ECFFE0;
     font-family: 'Cabin Condensed', sans-serif;
     font-size: 2em;
@@ -66,7 +67,7 @@ a {
 	right: 0;
 }
 .title {
-    margin: 0px auto;
+    margin: 2px auto;
     text-align: center;
     width: 100%;
     font-family: 'Cabin Condensed', sans-serif;
@@ -89,7 +90,7 @@ a {
 .text input {
     text-align: center;
     padding: 10px;
-    width: 49%;
+    width: 50%;
     font-family: 'Cabin Condensed', sans-serif;
     color: #A22FB0;
     font-weight: 300;

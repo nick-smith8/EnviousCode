@@ -17,8 +17,18 @@ $(document).ready(function() {
 //Confirm login
 $('.login-submit').click(function(event) {
   event.preventDefault();
-  //Post go here
-  alert("BOO");
+  var user = $('.loginform #user').val();
+  var pass = $('.loginform #pass').val();
+  $('.loginform #password').val('');
+
+  $.post( 'users/login', {user: user, pass: pass}, function(data) {
+  	if (data === '0') {
+  		// Load lobby
+  	}
+  	else
+  		alert(data);
+  });
+
 });
 
 $('.create-account').click(function(event) {
