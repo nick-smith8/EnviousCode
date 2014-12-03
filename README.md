@@ -37,7 +37,6 @@ Server hosts at [104.131.30.31](http://104.131.30.31/)
 
 
 ## Coming soon
-* Fixing issues with Nginx (FIXED)
 * Adding UI skeleton (IN PROGRESS)
 * Sockets???
 
