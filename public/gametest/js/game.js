@@ -10,6 +10,27 @@ document.body.appendChild(canvas);
 var hittop = false;
 var hitbot = false;
 var counter = 0;
+var sessionId;
+var sockettop = -99
+var socketbottom = -99
+var bottomshotsocket = -99
+var topshotsocket = -99
+socket.on('news',function(data) {
+		console.log(data)
+		if (data.top !=null)
+			sockettop = data.top
+		if (data.bottom !=null)
+			socketbottom = data.bottom
+		if (data.bottomshots!=null) {
+			bottomshotsocket = data.bottomshots
+		}
+
+		if (data.topshots!=null) {
+			topshotsocket = data.topshots
+		}
+	}); 
+
+
 
 // Background image
 var bgReady = false;
@@ -56,8 +77,8 @@ var spaceshiptop = {
 	speed: 256 // movement in pixels per second
 };
 
+var bottomshots = []
 var topshots = []
-var botshots = []
 
 var shot = {};
 var shottop = {};
@@ -91,59 +112,71 @@ var update = function (modifier) {
 
 
 	
-	if (38 in keysDown) { // Player holding up
+	if (37 in keysDown&&sessionId==2) { // Player holding up
+
 		if((spaceshiptop.x - spaceshiptop.speed * modifier) < 0){
 		}
 		else{
+		
+			 
 		spaceshiptop.x -= spaceshiptop.speed * modifier;
+		socket.emit('game', {"top":spaceshiptop.x})
 		}
 	}
-	if (40 in keysDown) { // Player holding down
+	if (39 in keysDown&&sessionId==2) { // Player holding down
 		if((spaceshiptop.x + spaceshiptop.speed * modifier) > 1360){
 
 		}
 		else{
+
+		
 		spaceshiptop.x += spaceshiptop.speed * modifier;
+		socket.emit('game', {"top":spaceshiptop.x})
 		}
 	}
-	if (37 in keysDown) { // Player holding left
+	if ((37 in keysDown)&&sessionId==1) { // Player holding left
 		if((spaceship.x - spaceship.speed * modifier) < 0){
 
 		}
 		else{
 		spaceship.x -= spaceship.speed * modifier;
+		socket.emit('game', {"bottom":spaceship.x})
 		}
 	}
-	if (39 in keysDown) { // Player holding right
+	if (39 in keysDown&&sessionId==1) { // Player holding right
 		
 		if((spaceship.x + spaceship.speed * modifier) > 1360){
 
 		}
 		else{
 		spaceship.x += spaceship.speed * modifier;
+		socket.emit('game', {"bottom":spaceship.x})
 		}	
 	}
-	if (32 in keysDown){
+	if (32 in keysDown&&sessionId==1){
 
-		if (spacePressed == false && topshots.length < 3) {
+		if (spacePressed == false && bottomshots.length < 3) {
+			
 			var shotty = {}
 			shotty.y = 573
 			shotty.x = spaceship.x
-			topshots.push(shotty)
+			bottomshots.push(shotty)
+			socket.emit('game', {"bottomshots":bottomshots})
 		}
 	}
 
 	if (32 in keysDown) {
 		spacePressed = false;
 	}
-	if (86 in keysDown){
+	if (32 in keysDown&&sessionId==2){
 
-		if (vPressed == false && botshots.length < 3) {
+		if (vPressed == false && topshots.length < 3) {
 			
 			var shottytop = {}
 			shottytop.y = 0
 			shottytop.x = spaceshiptop.x
-			botshots.push(shottytop)
+			topshots.push(shottytop)
+			socket.emit('game', {"topshots":topshots})
 			
 		}
 		
@@ -153,37 +186,47 @@ var update = function (modifier) {
 	}
 
 	// For shots coming from the bottom ship
+	if (bottomshotsocket!=-99)
+		bottomshots = bottomshotsocket
 
-	var newtopshots = []; //create new array to remove elemets outside of screen
+	var newbottomshots = []; //create new array to remove elemets outside of screen
 
-	topshots.forEach(function(shotter) {
+	bottomshots.forEach(function(shotter) {
 
 		shotter.y-=20;
 
 		if (shotter.y > 0)
 			//console.log(shotter.y);
-			newtopshots.push(shotter)
+			newbottomshots.push(shotter)
 	})
 
-	topshots = newtopshots
+	bottomshots = newbottomshots
 
 
     // For shots coming from the top ship
+	if (topshotsocket!=-99)
+			topshots = topshotsocket
+	var newtopshots = []; //create new array to remove elemets outside of screen
 
-	var newbotshots = []; //create new array to remove elemets outside of screen
-
-	botshots.forEach(function(shottertop) {
+	topshots.forEach(function(shottertop) {
 
 		shottertop.y+=20;
 
 		if (shottertop.y < 650)
 			//console.log(shotter.y);
-			newbotshots.push(shottertop)
+			newtopshots.push(shottertop)
 	})
 
-	botshots = newbotshots
+	topshots = newtopshots
+	if (sockettop !=-99)
+		spaceshiptop.x = sockettop
 
+	if (socketbottom !=-99)
+		spaceship.x = socketbottom
+	
 };
+
+
 
 // Draw everything
 var render = function () {
@@ -199,7 +242,7 @@ var render = function () {
 		ctx.drawImage(spaceshiptopImage, spaceshiptop.x, 0);
 	}
 	//for each loop to draw each shot
-	topshots.forEach(function(shotter) {
+	bottomshots.forEach(function(shotter) {
 		//console.log(shotter.x);
 		//console.log(spaceshiptop.x);
 		ctx.drawImage(shotImage,shotter.x+16, shotter.y);
@@ -212,7 +255,7 @@ var render = function () {
 		}
 	});
 
-	botshots.forEach(function(shottertop) {
+	topshots.forEach(function(shottertop) {
 		
 		ctx.drawImage(shotImage,shottertop.x+16, shottertop.y);
 		if(shottertop.y > 560 && shottertop.y < 600 && (shottertop.x) < (spaceship.x+10) && (shottertop.x) > (spaceship.x-10)){ 

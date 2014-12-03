@@ -4,9 +4,7 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
 var routes = require('./routes/index');
-
 var mongo = require('mongodb');
 var monk = require('monk');
 var db = monk('localhost:27017/eonline');
@@ -41,6 +39,11 @@ app.use(function(req, res, next) {
 });
 
 // error handlers
+
+
+
+
+
 
 // development error handler
 // will print stacktrace
