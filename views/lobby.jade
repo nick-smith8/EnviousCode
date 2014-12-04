@@ -1,0 +1,15 @@
+extends layout
+title= title
+
+block content
+  div(class="title") 
+    |Lobby
+  button(class="btn center start-game") Play
+  div(id='wrapper', class='text')
+    label(class='center') Highscores
+    div(id='highscore', class='text center')
+      table
+        thead
+          th UserName
+          th Score
+        tbody

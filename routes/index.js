@@ -18,15 +18,14 @@ router.get('/game', function(req, res) {
   res.render('game', {});
 });
 
+router.get('/lobby', function(req, res) {
+  res.render('lobby', {});
+});
 
 
 
 router.get('/test', function(req, res) {
   res.render('test', { title: 'Hello World' });
-});
-
-router.get('/highscores', function(req, res) {
-  res.render('highscores', {});
 });
 
 router.get('/userlist', function(req, res) {

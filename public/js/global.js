@@ -7,7 +7,6 @@ $(document).ready(function() {
 			tableContent += '<tr>';
 			tableContent += '<td>' + this.username + '</td>';
 			tableContent += '<td>' + this.score + '</td>';
-			tableContent += '<td>' + this.rank + '</td>';
 			tableContent += '</tr>';
 		});
 		$('#highscore table tbody').html(tableContent);
@@ -24,6 +23,7 @@ $('.login-submit').click(function(event) {
   $.post( 'users/login', {user: user, pass: pass}, function(data) {
   	if (data === '0') {
   		// Load lobby
+  		window.location.href += 'lobby';
   	}
   	else
   		alert(data);
@@ -32,11 +32,15 @@ $('.login-submit').click(function(event) {
 });
 
 $('.create-account').click(function(event) {
-  window.location.href += 'create'
+  window.location.href += 'create';
+});
+
+$('.start-game').click(function(event) {
+  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'game';
 });
 
 $('.return-to-signin').click(function(event) {
-  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1)
+  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1);
 });
 
 //Confirm new account
