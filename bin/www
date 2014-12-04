@@ -2,9 +2,30 @@
 var debug = require('debug')('enviousonline');
 var app = require('../app');
 var config = require('../config');
+var connectCounter = 0
 
 app.set('port', config.port);
 
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
+});
+var io = require('socket.io')(server);
+
+
+io.on('connect', function() { connectCounter = connectCounter+1; console.log(connectCounter)});
+io.on('disconnect', function() { connectCounter = connectCounter-1;console.log(connectCounter) });
+
+io.sockets.on('connection', function (socket) {
+	
+	socket.emit('playerId', connectCounter)
+ 
+  socket.on('my other event', function (data) {
+    console.log(data);
+  });
+
+  socket.on('game', function (data) {
+  	console.log(connectCounter)
+    io.sockets.emit('news', data);
+  });
+
 });
