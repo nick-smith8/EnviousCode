@@ -9,6 +9,7 @@ var config = require('./config');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var ws_handler = require('./ws_handler.js');
 
 var mongo = require('mongodb');
 var monk = require('monk');
@@ -20,10 +21,12 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
 app.locals.basedir = config.user;
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -35,7 +38,6 @@ app.use(function(req, res, next) {
     req.db = db;
     next();
 });
-
 
 app.use('/', routes);
 app.use('/users', users);

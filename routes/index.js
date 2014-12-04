@@ -14,6 +14,13 @@ router.get('/table', function(req, res) {
   res.render('table', { title: 'Envious Online' });
 });
 
+router.get('/game', function(req, res) {
+  res.render('game', {});
+});
+
+
+
+
 router.get('/test', function(req, res) {
   res.render('test', { title: 'Hello World' });
 });
