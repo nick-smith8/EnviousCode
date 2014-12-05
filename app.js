@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var debug = require('debug')('enviousonline');
 
 //var favicon = require('serve-favicon');
 var logger = require('morgan');
@@ -17,12 +18,11 @@ var db = monk('localhost:27017/eonline');
 
 var app = express();
 
+app.set('port', config.port);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-
-app.locals.basedir = config.user;
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -38,6 +38,8 @@ app.use(function(req, res, next) {
     req.db = db;
     next();
 });
+
+app.locals.basedir = config.user;
 
 app.use('/', routes);
 app.use('/users', users);
@@ -73,5 +75,16 @@ app.use(function(err, req, res, next) {
     });
 });
 
+var server = app.listen(app.get('port'), function() {
+  debug('Express server listening on port ' + server.address().port);
+});
 
-module.exports = app;
+// IO handler
+var io = require('socket.io').listen(server);
+
+io.set('loglevel', 1);
+
+io.sockets.on('connection', function(socket) {
+    console.log("Connection Established");
+    ws_handler.init(io, socket);
+});

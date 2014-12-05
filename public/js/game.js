@@ -1,3 +1,14 @@
+/*console.log(socket);
+
+var socket = io.connect();
+
+
+
+console.log("Sending greeting");
+
+
+socket.emit('greeting', {});*/
+
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -9,6 +20,7 @@ document.body.appendChild(canvas);
 //For if top or bot ship is hit
 
 //var socket = io();
+var socket = io.connect();
 
 var hittop = false;
 var hitbot = false;

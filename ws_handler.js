@@ -1,37 +1,36 @@
 #!/usr/bin/env nodejs
-var app = require('express');
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+
+var io;
+var gameSocket;
+
+exports.init = function(sio, socket) {
+	io = sio;
+	gameSocket = socket;
+
+	gameSocket.on('greeting', function() {
+		console.log("GREETING RECEIVED");
+	});
+
+	gameSocket.on('connect', connect);
+	gameSocket.on('disconnect', connect);
+	gameSocket.on('game', game);
+};
 
 var sessionId;
 var connectCounter;
 
-io.on('connect', function() { 
+function connect() {
 	connectCounter = connectCounter+1; 
 	console.log(connectCounter);
-});
+};
 
-io.on('disconnect', function() { 
+function disconnect() {
 	connectCounter = connectCounter-1;
 	console.log(connectCounter) ;
-});
+};
 
-io.sockets.on('connection', function (socket) {
-  socket.emit('playerId', connectCounter);
-  socket.on('my other event', function (data) {
-    console.log(data);
-});
-
-socket.on('game', function (data) {
+function game (data) {
   	console.log(connectCounter)
     io.sockets.emit('news', data);
-  });
+};
 
-});
-
-// var sessionId;
-// var socket = io('104.131.30.31:3000');
-// socket.on('connection', function(socket){
-//   console.log('a user connected');
-// });
-// socket.on('playerId', function(data) {console.log('hi');sessionId = data})
