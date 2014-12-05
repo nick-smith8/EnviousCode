@@ -46,7 +46,7 @@ a {
     font-family: 'Cabin Condensed', sans-serif;
     font-weight: 400;
     position: absolute;
-    height: 60%;
+    height: 50%;
     width: 96%;
     margin: auto;
     bottom: 0;
@@ -76,7 +76,7 @@ a {
     font-size: 110px;
 }
 .loginform {
-	height: 60%;
+	height: 100%;
 }
 .createform {
 	height: 60%;
