@@ -40,6 +40,7 @@ app.use(function(req, res, next) {
 });
 
 app.locals.basedir = config.user;
+app.locals.port = config.port;
 
 app.use('/', routes);
 app.use('/users', users);
@@ -81,8 +82,6 @@ var server = app.listen(app.get('port'), function() {
 
 // IO handler
 var io = require('socket.io').listen(server);
-
-io.set('loglevel', 1);
 
 io.sockets.on('connection', function(socket) {
     console.log("Connection Established");

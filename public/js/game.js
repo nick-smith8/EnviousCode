@@ -20,7 +20,7 @@ document.body.appendChild(canvas);
 //For if top or bot ship is hit
 
 //var socket = io();
-var socket = io.connect();
+
 
 var hittop = false;
 var hitbot = false;
