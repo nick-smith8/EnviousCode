@@ -59,6 +59,9 @@ router.post('/login', function(req, res) {
 	if (user && pass) {
 		collection.count({ username: user , password: pass}, function (error, count) {
 		  if (count !== 0) {
+		  	
+			res.cookie('username', user, { domain: '.104.131.30.31.com', secure: true });
+
 		  	res.send('0');
 		  }
 		  else
