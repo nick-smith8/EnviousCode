@@ -268,8 +268,17 @@ var render = function () {
 		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){
 			socket.emit('userHit', 2);	
 			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
-			alert("Game over Bottom wins");
+			
 			console.log("Hit");
+			if(sessionId == 2){
+				alert("I'm sorry you have lost.  You will now be returned to the lobby");
+				window.location.replace("http://104.131.30.31/lobby");
+			}
+			else{
+				alert("Bottom player wins!!");
+			}
+
+
 		}
 	});
 
@@ -280,8 +289,15 @@ var render = function () {
 			ctx.drawImage(explosionImage,spaceship.x,shottertop.y);
 			// console.log(shottertop.y);
 			// console.log(spaceship.x);
-			alert("Game over top wins");
+			
 			console.log("Hit");
+			if(sessionId == 1){
+				alert("I'm sorry you have lost.  You will now be returned to the lobby");
+				window.location.replace("http://104.131.30.31/lobby");
+			}
+			else{
+				alert("Top player wins!!")
+			}
 		}
 	});
 };
