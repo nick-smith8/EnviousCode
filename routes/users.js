@@ -34,8 +34,11 @@ router.post('/create_account', function(req, res) {
 		  		collection.insert({username: user, password: pass1, score: 0}, function (err, result) {
 		  			if(err) 
 		  				res.send(err)
-		  			else
+		  			else {
+		  				res.cookie('username', user, { domain: '.104.131.30.31.com', secure: true });
 		  				res.send('0');
+		  			}
+		  				
 		  		});
 		  	}
 		  	else {
