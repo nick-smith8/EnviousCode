@@ -61,8 +61,13 @@ router.post('/login', function(req, res) {
 	if (user && pass) {
 		collection.count({ username: user , password: pass}, function (error, count) {
 		  if (count !== 0) {
-		  	res.cookie('username' ,user,{domain: '.104.131.30.31',secure: true});
+		  	res.cookie('username', user, {domain: '.104.131.30.31',secure: true});
+		  	//res.cookie('username',user,{domain: '.104.131.30.31',secure: true});
 		  	res.send('0');
+		  	console.log("Login successful");
+		  	//username = user;
+		  	//console.log(username);
+		  	//req.session.username = user;
 		  }
 		  else
 		  	res.send("Invalid username or password received");

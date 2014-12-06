@@ -23,6 +23,7 @@ $('.login-submit').click(function(event) {
   $.post( 'users/login', {user: user, pass: pass}, function(data) {
   	if (data === '0') {
   		// Load lobby
+  		console.log('logged in');
   		window.location.href += 'lobby';
   	}
   	else

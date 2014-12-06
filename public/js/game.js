@@ -1,14 +1,3 @@
-/*console.log(socket);
-
-var socket = io.connect();
-
-
-
-console.log("Sending greeting");
-
-
-socket.emit('greeting', {});*/
-
 // Create the canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
@@ -18,18 +7,16 @@ document.body.appendChild(canvas);
 
 //Variable declarations
 //For if top or bot ship is hit
-
-//var socket = io();
-
-
 var hittop = false;
 var hitbot = false;
 var counter = 0;
-var sessionId;
 var sockettop = -99;
 var socketbottom = -99;
 var bottomshotsocket = -99;
 var topshotsocket = -99;
+
+var sessionId;
+console.log("Username: "+username);
 
 // Background image
 var bgReady = false;
@@ -69,11 +56,11 @@ explosionImage.src = "images/explosion.png";
 
 // Game objects
 var spaceship = {
-	speed: 256 // movement in pixels per second
+	speed: 384 // movement in pixels per second
 };
 
 var spaceshiptop = {
-	speed: 256 // movement in pixels per second
+	speed: 384 // movement in pixels per second
 };
 
 var bottomshots = []
@@ -106,8 +93,13 @@ var reset = function () {
 	shottop.y = 0;
 };
 
+socket.on('playerId', function(data) {
+	console.log('Received new sessionId: '+data.sessionId);
+	sessionId = data.sessionId;
+});
+
 socket.on('news',function(data) {
-	console.log(data);
+	//console.log(data);
 	if (data.top !=null)
 		sockettop = data.top;
 	if (data.bottom !=null)
@@ -119,21 +111,23 @@ socket.on('news',function(data) {
 	}
 }); 
 
-socket.on('playerId', function(data) {
+/*socket.on('playerId', function(data) {
 	sessionId = data;
 	socket.emit('userQueue', data);	
-});
+});*/
 
 socket.on('userQueuedata',function(data) {
-		userQueue = data;
-		console.log("This is the user queue: "+ userQueue);
-	});
+	userQueue = data;
+	console.log("This is the user queue: "+ userQueue);
+});
+
+// Socket events
+socket.emit('newUser', {user: username});	
 
 
 // Update game objects
 var update = function (modifier) {
-
-	if (37 in keysDown&&sessionId==2) { // Top Player holding left
+	if (37 in keysDown&&sessionId==2) { // Top player holding Left
 		if((spaceshiptop.x - spaceshiptop.speed * modifier) < 0){
 			//Do nothing
 		} else {
@@ -144,7 +138,7 @@ var update = function (modifier) {
 			});
 		}
 	}
-	if (39 in keysDown&&sessionId==2) { // Top Player holding Right
+	if (39 in keysDown&&sessionId==2) { // Top player holding Right
 		if((spaceshiptop.x + spaceshiptop.speed * modifier) > 1360){
 			//Do nothing
 		} else {
@@ -154,7 +148,7 @@ var update = function (modifier) {
 			});
 		}
 	}
-	if ((37 in keysDown)&&sessionId==1) { // Player holding left
+	if ((37 in keysDown)&&sessionId==1) { // Bottom player holding Left
 		if((spaceship.x - spaceship.speed * modifier) < 0){
 			//Do nothing
 		} else {
@@ -164,7 +158,7 @@ var update = function (modifier) {
 			});
 		}
 	}
-	if (39 in keysDown&&sessionId==1) { // Player holding right
+	if (39 in keysDown&&sessionId==1) { // Bottom player holding Right
 		if((spaceship.x + spaceship.speed * modifier) > 1360){
 			//Do nothing
 		} else {
@@ -174,7 +168,7 @@ var update = function (modifier) {
 			});
 		}	
 	}
-	if (32 in keysDown&&sessionId==1){ // Player holding space key
+	if (32 in keysDown&&sessionId==1){ // Bottom player holding Space
 		if (spacePressed == false && bottomshots.length < 3) {
 			var shotty = {}
 			shotty.y = 573
@@ -188,7 +182,7 @@ var update = function (modifier) {
 	if (32 in keysDown) {
 		spacePressed = false;
 	}
-	if (32 in keysDown&&sessionId==2){ // Player holding space key
+	if (32 in keysDown&&sessionId==2){ // Top player holding Space
 		if (vPressed == false && topshots.length < 3) {
 			var shottytop = {}
 			shottytop.y = 0
@@ -269,6 +263,9 @@ var render = function () {
 			socket.emit('userHit', 2);	
 			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
 			alert("Game over Bottom wins");
+/*			socket.emit('gameover', {
+				"topshots":topshots
+			});*/
 			console.log("Hit");
 		}
 	});

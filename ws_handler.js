@@ -4,6 +4,7 @@ var io;
 var gameSocket;
 var sessionId;
 var connectCounter=0;
+var players = [];
 var userQueue = [];
 
 exports.init = function(sio, socket) {
@@ -17,10 +18,10 @@ exports.init = function(sio, socket) {
 	
 	connect();
 
-
+	gameSocket.on('newUser', insertUser);
 	gameSocket.on('disconnect', disconnect);
 	gameSocket.on('game', game);
-	socket.emit('playerId', connectCounter);
+	//socket.emit('playerId', connectCounter);
 	gameSocket.on('userQueue',getuserQueue);
 	gameSocket.on('userHit',userHit);
 };
@@ -37,8 +38,12 @@ function disconnect() {
 	console.log(connectCounter) ;
 };
 
+function newUser(data) {
+	var user = data.user;
+	insert(user);	
+}
+
 function game (data) {
-  	console.log(connectCounter)
     io.sockets.emit('news', data);
 };
 
@@ -66,5 +71,20 @@ function userHit (data) {
  io.sockets.emit('userQueuedata', userQueue);
 };
 
+// Add new user to game, if available, or queue
+function insertUser(data) {
+	console.log("Inserting user: "+data.user);
+	var user = data.user;
+	if (!players[1]) {
+		console.log("Adding player 1");
+		players[1] = user;
+		this.emit('playerId', { sessionId: 1 });
+	} else if (!players[2]) {
+		players[2] = user;
+		this.emit('playerId', { sessionId: 2 });
+	} else {
+		userQueue.push(user);
+	}
+}
 
 

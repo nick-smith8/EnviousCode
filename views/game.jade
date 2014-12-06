@@ -4,4 +4,5 @@ block content
   script(type='text/javascript', src='socket.io/socket.io.js')
   script.
     var socket = io.connect(document.location.hostname+':'+#{port});
+    var username = '#{username}';
   script(type='text/javascript', src='js/game.js')

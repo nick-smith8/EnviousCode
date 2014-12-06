@@ -15,7 +15,9 @@ router.get('/table', function(req, res) {
 });
 
 router.get('/game', function(req, res) {
-  res.render('game', {});
+  console.log(req.cookies.username);
+  var username = req.cookies.username;
+  res.render('game', { username : username });
 });
 
 router.get('/lobby', function(req, res) {
