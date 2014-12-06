@@ -116,20 +116,21 @@ socket.on('news',function(data) {
 		topshotsocket = data.topshots;
 	}
 }); 
-
+socket.on('playerId', function(data) {sessionId = data})
 // Update game objects
 var update = function (modifier) {
-	if (37 in keysDown&&sessionId==2) { // Player holding up
+	if (37 in keysDown&&sessionId==2) { // Top Player holding left
 		if((spaceshiptop.x - spaceshiptop.speed * modifier) < 0){
 			//Do nothing
 		} else {
 			spaceshiptop.x -= spaceshiptop.speed * modifier;
+
 			socket.emit('game', {
 				"top":spaceshiptop.x
 			});
 		}
 	}
-	if (39 in keysDown&&sessionId==2) { // Player holding down
+	if (39 in keysDown&&sessionId==2) { // Top Player holding Right
 		if((spaceshiptop.x + spaceshiptop.speed * modifier) > 1360){
 			//Do nothing
 		} else {
@@ -210,10 +211,29 @@ var update = function (modifier) {
 	topshots = newtopshots;
 
 	// Bounds check
-	if (sockettop !=-99)
+	if (sockettop !=-99 && sessionId ==2) {
+		if (37 in keysDown && sockettop < spaceshiptop.x ){
+			spaceshiptop.x = sockettop;
+		}
+		if (39 in keysDown && sockettop > spaceshiptop.x ){
+			spaceshiptop.x = sockettop;
+		}
+		
+	}
+	if (sessionId == 1 && sockettop != -99)
 		spaceshiptop.x = sockettop;
+		
 
-	if (socketbottom !=-99)
+	if (socketbottom !=-99 && sessionId ==1) {
+		if (37 in keysDown && socketbottom < spaceship.x ){
+			spaceship.x = socketbottom;
+		}
+		if (39 in keysDown && socketbottom > spaceship.x ){
+			spaceship.x = socketbottom;
+		}
+		
+	}
+	if (sessionId == 2 && socketbottom != -99)
 		spaceship.x = socketbottom;
 };
 

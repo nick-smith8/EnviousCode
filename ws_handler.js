@@ -2,6 +2,8 @@
 
 var io;
 var gameSocket;
+var sessionId;
+var connectCounter=0;
 
 exports.init = function(sio, socket) {
 	io = sio;
@@ -11,21 +13,22 @@ exports.init = function(sio, socket) {
 		console.log("GREETING RECEIVED");
 	});
 
-	gameSocket.on('connect', connect);
-	gameSocket.on('disconnect', connect);
+	
+	connect();
+	gameSocket.on('disconnect', disconnect);
 	gameSocket.on('game', game);
+	socket.emit('playerId', connectCounter);
 };
-
-var sessionId;
-var connectCounter;
 
 function connect() {
 	connectCounter = connectCounter+1; 
+	console.log("Connect: ")
 	console.log(connectCounter);
 };
 
 function disconnect() {
 	connectCounter = connectCounter-1;
+	console.log("Disconnect: ")
 	console.log(connectCounter) ;
 };
 
