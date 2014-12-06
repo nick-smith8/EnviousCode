@@ -79,6 +79,8 @@ var spaceshiptop = {
 var bottomshots = []
 var topshots = []
 
+var userQueue = []
+
 var shot = {};
 var shottop = {};
 
@@ -116,9 +118,21 @@ socket.on('news',function(data) {
 		topshotsocket = data.topshots;
 	}
 }); 
-socket.on('playerId', function(data) {sessionId = data})
+
+socket.on('playerId', function(data) {
+	sessionId = data;
+	socket.emit('userQueue', data);	
+});
+
+socket.on('userQueuedata',function(data) {
+		userQueue = data;
+		console.log("This is the user queue: "+ userQueue);
+	});
+
+
 // Update game objects
 var update = function (modifier) {
+
 	if (37 in keysDown&&sessionId==2) { // Top Player holding left
 		if((spaceshiptop.x - spaceshiptop.speed * modifier) < 0){
 			//Do nothing
@@ -252,6 +266,7 @@ var render = function () {
 	bottomshots.forEach(function(shotter) {
 		ctx.drawImage(shotImage,shotter.x+16, shotter.y);
 		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){
+			socket.emit('userHit', 2);	
 			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
 			alert("Game over Bottom wins");
 			console.log("Hit");
@@ -259,8 +274,9 @@ var render = function () {
 	});
 
 	topshots.forEach(function(shottertop) {
-		ctx.drawImage(shotImage,shottertop.x+16, shottertop.y);
+		ctx.drawImage(shotImage,shottertop.x+16, shottertop.y+30);
 		if(shottertop.y > 560 && shottertop.y < 600 && (shottertop.x) < (spaceship.x+10) && (shottertop.x) > (spaceship.x-10)){ 
+			socket.emit('userHit',1);
 			ctx.drawImage(explosionImage,spaceship.x,shottertop.y);
 			// console.log(shottertop.y);
 			// console.log(spaceship.x);

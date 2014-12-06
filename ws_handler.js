@@ -4,6 +4,7 @@ var io;
 var gameSocket;
 var sessionId;
 var connectCounter=0;
+var userQueue = [];
 
 exports.init = function(sio, socket) {
 	io = sio;
@@ -15,9 +16,13 @@ exports.init = function(sio, socket) {
 
 	
 	connect();
+
+
 	gameSocket.on('disconnect', disconnect);
 	gameSocket.on('game', game);
 	socket.emit('playerId', connectCounter);
+	gameSocket.on('userQueue',getuserQueue);
+	gameSocket.on('userHit',userHit);
 };
 
 function connect() {
@@ -36,4 +41,30 @@ function game (data) {
   	console.log(connectCounter)
     io.sockets.emit('news', data);
 };
+
+function getuserQueue (data) {
+	if(userQueue.length != data-1){
+
+		}
+		else{
+			userQueue.push(data);
+		}
+    io.sockets.emit('userQueuedata', userQueue);
+};
+
+function userHit (data) {
+	
+	console.log("This is the data from user hit: " + data)
+	
+  if(data == 2 ){
+  	userQueue.splice(1,1);
+  }
+  if(data == 1 ){
+  	userQueue.splice(0,1);
+  }
+
+ io.sockets.emit('userQueuedata', userQueue);
+};
+
+
 
