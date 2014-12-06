@@ -37,6 +37,7 @@ router.post('/create_account', function(req, res) {
 		  			else{
 		  				res.send('0');
 		  			}
+		  				
 		  		});
 		  	}
 		  	else {
