@@ -14,6 +14,8 @@ var sockettop = -99;
 var socketbottom = -99;
 var bottomshotsocket = -99;
 var topshotsocket = -99;
+var botDirection = '';
+var topDirection = '';
 
 var sessionId;
 console.log("Username: "+username);
@@ -100,74 +102,90 @@ socket.on('playerId', function(data) {
 
 socket.on('news',function(data) {
 	//console.log(data);
-	if (data.top !=null)
-		sockettop = data.top;
-	if (data.bottom !=null)
-		socketbottom = data.bottom;
+	if (data.top !=null) {
+		sockettop = data.top.x;
+		topDirection = data.top.direction;
+		if ((sockettop < spaceshiptop.x && topDirection == "left") || (sockettop > spaceshiptop.x && topDirection == "right") )
+			spaceshiptop.x = sockettop;
+	}
+	if (data.bottom !=null) {
+		socketbottom = data.bottom.x;
+		botDirection = data.bottom.direction;
+		if ((socketbottom < spaceship.x && botDirection == "left") || (socketbottom > spaceship.x && botDirection == "right"))
+			spaceship.x = socketbottom;
+	}
 	if (data.bottomshots!=null)
-		bottomshotsocket = data.bottomshots;
+		shot.y = data.bottomshots;
 	if (data.topshots!=null) {
-		topshotsocket = data.topshots;
+		shottop.y = data.topshots;
 	}
 }); 
 
-/*socket.on('playerId', function(data) {
-	sessionId = data;
-	socket.emit('userQueue', data);	
-});*/
-
-socket.on('userQueuedata',function(data) {
+/*socket.on('userQueuedata',function(data) {
 	userQueue = data;
 	console.log("This is the user queue: "+ userQueue);
-});
+});*/
 
 // Socket events
-socket.emit('newUser', {user: username});	
+
+socket.emit('getSessionId', {
+	user: username,
+	newUser : 1
+});
 
 
 // Update game objects
 var update = function (modifier) {
-	if (37 in keysDown&&sessionId==2) { // Top player holding Left
-		if((spaceshiptop.x - spaceshiptop.speed * modifier) < 0){
-			//Do nothing
-		} else {
-			spaceshiptop.x -= spaceshiptop.speed * modifier;
+	if (37 in keysDown && sessionId==2) { // Top player holding Left
+		spaceshiptop.x  = Math.floor(spaceshiptop.x - spaceshiptop.speed * modifier);
+		if(spaceshiptop.x < 0){
+			spaceshiptop.x = 0;
+		} 
+		socket.emit('game', {
+			"top": {
+				"x": spaceshiptop.x,
+				"direction": "left"
+			}
+		});
+	}
+	if (39 in keysDown && sessionId==2) { // Top player holding Right
+		spaceshiptop.x = Math.floor(spaceshiptop.x + spaceshiptop.speed * modifier);
+		if(spaceshiptop.x > 1360){
+			spaceshiptop.x = 1360;
+		}
+		socket.emit('game', {
+			"top": {
+				"x": spaceshiptop.x,
+				"direction": "right"
+			}
+		});
+	}
+	if ((37 in keysDown) && sessionId==1) { // Bottom player holding Left
+		spaceship.x = Math.floor(spaceship.x - spaceship.speed * modifier);
+		if(spaceship.x < 0){
+			spaceship.x = 0;
+		} 
+		socket.emit('game', {
+			"bottom": {
+				"x": spaceship.x,
+				"direction": "left"
+			}
+		});
+	}
 
-			socket.emit('game', {
-				"top":spaceshiptop.x
-			});
-		}
-	}
-	if (39 in keysDown&&sessionId==2) { // Top player holding Right
-		if((spaceshiptop.x + spaceshiptop.speed * modifier) > 1360){
-			//Do nothing
-		} else {
-			spaceshiptop.x += spaceshiptop.speed * modifier;
-			socket.emit('game', {
-				"top":spaceshiptop.x
-			});
-		}
-	}
-	if ((37 in keysDown)&&sessionId==1) { // Bottom player holding Left
-		if((spaceship.x - spaceship.speed * modifier) < 0){
-			//Do nothing
-		} else {
-			spaceship.x -= spaceship.speed * modifier;
-			socket.emit('game', {
-				"bottom":spaceship.x
-			});
-		}
-	}
 	if (39 in keysDown&&sessionId==1) { // Bottom player holding Right
-		if((spaceship.x + spaceship.speed * modifier) > 1360){
-			//Do nothing
-		} else {
-			spaceship.x += spaceship.speed * modifier;
-			socket.emit('game', {
-				"bottom":spaceship.x
-			});
-		}	
+		spaceship.x = Math.floor(spaceship.x + spaceship.speed * modifier);
+		if(spaceship.x > 1360){
+			spaceship.x = 1360;
+		}
+		socket.emit('game', {
+			"bottom": {
+				"x": spaceship.x,
+				"direction": "right"
+			}
+		});
 	}
+
 	if (32 in keysDown&&sessionId==1){ // Bottom player holding Space
 		if (spacePressed == false && bottomshots.length < 3) {
 			var shotty = {}
@@ -218,31 +236,14 @@ var update = function (modifier) {
 	});
 	topshots = newtopshots;
 
-	// Bounds check
-	if (sockettop !=-99 && sessionId ==2) {
-		if (37 in keysDown && sockettop < spaceshiptop.x ){
-			spaceshiptop.x = sockettop;
-		}
-		if (39 in keysDown && sockettop > spaceshiptop.x ){
-			spaceshiptop.x = sockettop;
-		}
-		
-	}
-	if (sessionId == 1 && sockettop != -99)
-		spaceshiptop.x = sockettop;
-		
+/*	if (sockettop != -99)
+		if ((sockettop < spaceshiptop.x && topDirection == "left") || (sockettop > spaceshiptop.x && topDirection == "right") )
+			spaceshiptop.x = sockettop;*/
 
-	if (socketbottom !=-99 && sessionId ==1) {
-		if (37 in keysDown && socketbottom < spaceship.x ){
-			spaceship.x = socketbottom;
-		}
-		if (39 in keysDown && socketbottom > spaceship.x ){
-			spaceship.x = socketbottom;
-		}
-		
-	}
-	if (sessionId == 2 && socketbottom != -99)
-		spaceship.x = socketbottom;
+	//if (socketbottom != -99)
+/*		if ((socketbottom < spaceship.x && botDirection == "left") || (socketbottom > spaceship.x && botDirection == "right") )
+			spaceship.x = socketbottom;*/
+
 };
 
 // Draw everything
@@ -259,19 +260,27 @@ var render = function () {
 	// Draw each shot
 	bottomshots.forEach(function(shotter) {
 		ctx.drawImage(shotImage,shotter.x+16, shotter.y);
-		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){
-			socket.emit('userHit', 2);	
+		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){ // Confirmed kill
 			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
-			console.log("Hit");
+			// Winner sends GameOver command
+			if(sessionId == 1){
+				socket.emit('gameOver', { sessionId: 2 });	
+			}
+			//Loser gets redirected
 			if(sessionId == 2){
 				alert("I'm sorry you have lost.  You will now be returned to the lobby");
-				window.location.replace("http://104.131.30.31/lobby");
+				//window.location.replace("http://104.131.30.31/lobby");
+				// Return to lobby
+				window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'lobby';
 			}
 			else{
 				alert("Bottom player wins!!");
 			}
 
-
+			socket.emit('getSessionId', {
+				user: username,
+				newUser : 0
+			});
 		}
 	});
 
@@ -300,11 +309,11 @@ var main = function () {
 	var now = Date.now();
 	var delta = now - then;
 
+	//update(100);
 	update(delta / 1000);
 	render();
 
 	then = now;
-
 	// Request to do this again ASAP
 	requestAnimationFrame(main);
 };

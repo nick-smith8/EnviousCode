@@ -61,10 +61,10 @@ router.post('/login', function(req, res) {
 	if (user && pass) {
 		collection.count({ username: user , password: pass}, function (error, count) {
 		  if (count !== 0) {
-		  	res.cookie('username', user, {domain: '.104.131.30.31',secure: true});
+		  	res.cookie('username', user, {});
 		  	//res.cookie('username',user,{domain: '.104.131.30.31',secure: true});
 		  	res.send('0');
-		  	console.log("Login successful");
+		  	console.log("User logged in successfully: "+user);
 		  	//username = user;
 		  	//console.log(username);
 		  	//req.session.username = user;

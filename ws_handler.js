@@ -2,10 +2,12 @@
 
 var io;
 var gameSocket;
+
 var sessionId;
 var connectCounter=0;
 var players = [];
 var userQueue = [];
+var clients = [];
 
 exports.init = function(sio, socket) {
 	io = sio;
@@ -15,47 +17,34 @@ exports.init = function(sio, socket) {
 		console.log("GREETING RECEIVED");
 	});
 
-	
-	connect();
 
 	gameSocket.on('newUser', insertUser);
+	gameSocket.on('getSessionId', getSessionId);
+	gameSocket.on('gameOver', endGame);
+
+	gameSocket.on('connect', connect);
 	gameSocket.on('disconnect', disconnect);
 	gameSocket.on('game', game);
 	//socket.emit('playerId', connectCounter);
-	gameSocket.on('userQueue',getuserQueue);
+	//gameSocket.on('userQueue',getuserQueue);
 	gameSocket.on('userHit',userHit);
 };
 
 function connect() {
-	connectCounter = connectCounter+1; 
-	console.log("Connect: ")
-	console.log(connectCounter);
+	console.log("Connect: " + this.id)
 };
 
 function disconnect() {
-	connectCounter = connectCounter-1;
-	console.log("Disconnect: ")
-	console.log(connectCounter) ;
-};
-
-function newUser(data) {
-	var user = data.user;
-	insert(user);	
+	console.log("Disconnect: " + this.id)
+	var id = this.id;
+	if (clients[id]) {
+		removeUser(clients[id]);
+	}
 }
 
 function game (data) {
     io.sockets.emit('news', data);
-};
-
-function getuserQueue (data) {
-	if(userQueue.length != data-1){
-
-		}
-		else{
-			userQueue.push(data);
-		}
-    io.sockets.emit('userQueuedata', userQueue);
-};
+}
 
 function userHit (data) {
 	
@@ -68,23 +57,60 @@ function userHit (data) {
   	userQueue.splice(0,1);
   }
 
- io.sockets.emit('userQueuedata', userQueue);
-};
+ //io.sockets.emit('userQueuedata', userQueue);
+}
 
 // Add new user to game, if available, or queue
-function insertUser(data) {
-	console.log("Inserting user: "+data.user);
-	var user = data.user;
+function insertUser(user) {
+	console.log("Current players: "+players);
+	console.log("Inserting user: "+user);
+	var sessionId;
 	if (!players[1]) {
 		console.log("Adding player 1");
 		players[1] = user;
-		this.emit('playerId', { sessionId: 1 });
+		sessionId = 1;
 	} else if (!players[2]) {
+		console.log("Adding player 2");
 		players[2] = user;
-		this.emit('playerId', { sessionId: 2 });
+		sessionId = 2;
 	} else {
-		userQueue.push(user);
+		console.log("Adding player to queue");
+		var sessionId = userQueue.push(user) + 2;
 	}
+	return sessionId;
+	//this.emit('playerId', { sessionId: sessionId });
+}
+// Remove user from list of players
+function removeUser(user) {
+	console.log("Removing user: "+user);
+	if (players.indexOf(user) > 0) {
+		var sessionId = players.indexOf(user);
+		delete players[sessionId];
+	}
+	else if (userQueue.indexOf(user) > 0) {
+		var sessionId = userQueue.indexOf(user);
+		userQueue.splice(sessionId, sessionId);
+	}
+	return sessionId;
+}
+function getSessionId(data) {
+	var user = data.user;
+	var newUser = data.newUser;
+	if (newUser) {
+		sessionId = insertUser(user);
+	} else {
+		sessionId = (players.indexOf(user) != -1 ? players.indexOf(user) : userQueue.indexOf(user));
+	}
+	clients[this.id] = user;
+	this.emit('playerId', { sessionId: sessionId});
 }
 
+// Removes losing player and adds the top of the queue
+function endGame(data) {
+	var loserId = data.sessionId;
+	var username = players[loserId];
+	removeUser(username); 
+	var newPlayer = userQueue.shift();
+	insertUser(newPlayer);
+}
 

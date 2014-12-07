@@ -3,6 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res) {
+  res.clearCookie('username');
   res.render('index', {});
 });
 
@@ -15,7 +16,6 @@ router.get('/table', function(req, res) {
 });
 
 router.get('/game', function(req, res) {
-  console.log(req.cookies.username);
   var username = req.cookies.username;
   res.render('game', { username : username });
 });
