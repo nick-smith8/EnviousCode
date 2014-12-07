@@ -16,6 +16,7 @@ var bottomshotsocket = -99;
 var topshotsocket = -99;
 var botDirection = '';
 var topDirection = '';
+var gameStatus = 0;
 
 var sessionId;
 console.log("Username: "+username);
@@ -93,6 +94,7 @@ var reset = function () {
 	spaceshiptop.x = canvas.width / 2;
 	shot.y = 573;
 	shottop.y = 0;
+	gameStatus = 1;
 };
 
 socket.on('playerId', function(data) {
@@ -115,19 +117,13 @@ socket.on('news',function(data) {
 			spaceship.x = socketbottom;
 	}
 	if (data.bottomshots!=null) {
-		console.log("SHOTS FIRED");
 		bottomshotsocket = data.bottomshots;
-		
+
 	}
 	if (data.topshots!=null) {
 		topshotsocket = data.topshots;
 	}
 }); 
-
-/*socket.on('userQueuedata',function(data) {
-	userQueue = data;
-	console.log("This is the user queue: "+ userQueue);
-});*/
 
 // Socket events
 
@@ -135,7 +131,6 @@ socket.emit('getSessionId', {
 	user: username,
 	newUser : 1
 });
-
 
 // Update game objects
 var update = function (modifier) {
@@ -207,9 +202,6 @@ var update = function (modifier) {
 	}
 	if (32 in keysDown&&sessionId==2){ // Top player holding Space
 		if (vPressed == false && topshots.length < 3) {
-/*			var shottytop = {}
-			shottytop.y = 0
-			shottytop.x = spaceshiptop.x*/
 			var shottytop = {
 				'y': 0,
 				'x': spaceshiptop.x
@@ -264,26 +256,29 @@ var render = function () {
 	bottomshots.forEach(function(shotter) {
 		ctx.drawImage(shotImage, shotter.x+16, shotter.y);
 		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){ // Confirmed kill
-			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
-			// Winner sends GameOver command
-			if(sessionId == 1){
-				socket.emit('gameOver', { sessionId: 2 });	
+			if (gameStatus) {
+				ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
+				// Winner sends GameOver command
+				if(sessionId == 1){
+					socket.emit('gameOver', { sessionId: 2 });	
+				}
+				//Loser gets redirected
+				if(sessionId == 2){
+					// Return to lobby
+					socket.emit('disconnect', {});
+					window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'lobby';
+					alert("You lose. You have been returned to the lobby");
+				}
+				else{
+					//alert("Bottom player wins!!");
+				}
+				//Get new sessionId
+				socket.emit('getSessionId', {
+					user: username,
+					newUser : 0
+				});
 			}
-			//Loser gets redirected
-			if(sessionId == 2){
-				alert("I'm sorry you have lost.  You will now be returned to the lobby");
-				//window.location.replace("http://104.131.30.31/lobby");
-				// Return to lobby
-				window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'lobby';
-			}
-			else{
-				alert("Bottom player wins!!");
-			}
-
-			socket.emit('getSessionId', {
-				user: username,
-				newUser : 0
-			});
+			gameStatus = 0;
 		}
 	});
 

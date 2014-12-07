@@ -85,5 +85,5 @@ var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function(socket) {
     console.log("Connection Established");
-    ws_handler.init(io, socket);
+    ws_handler.init(io, socket, db);
 });
