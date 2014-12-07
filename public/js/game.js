@@ -114,10 +114,13 @@ socket.on('news',function(data) {
 		if ((socketbottom < spaceship.x && botDirection == "left") || (socketbottom > spaceship.x && botDirection == "right"))
 			spaceship.x = socketbottom;
 	}
-	if (data.bottomshots!=null)
-		shot.y = data.bottomshots;
+	if (data.bottomshots!=null) {
+		console.log("SHOTS FIRED");
+		bottomshotsocket = data.bottomshots;
+		
+	}
 	if (data.topshots!=null) {
-		shottop.y = data.topshots;
+		topshotsocket = data.topshots;
 	}
 }); 
 
@@ -187,10 +190,12 @@ var update = function (modifier) {
 	}
 
 	if (32 in keysDown&&sessionId==1){ // Bottom player holding Space
+		console.log("PEW");
 		if (spacePressed == false && bottomshots.length < 3) {
-			var shotty = {}
-			shotty.y = 573
-			shotty.x = spaceship.x
+			var shotty = {
+				'y': 573,
+				'x': spaceship.x
+			}
 			bottomshots.push(shotty)
 			socket.emit('game', {
 				"bottomshots":bottomshots
@@ -202,9 +207,13 @@ var update = function (modifier) {
 	}
 	if (32 in keysDown&&sessionId==2){ // Top player holding Space
 		if (vPressed == false && topshots.length < 3) {
-			var shottytop = {}
+/*			var shottytop = {}
 			shottytop.y = 0
-			shottytop.x = spaceshiptop.x
+			shottytop.x = spaceshiptop.x*/
+			var shottytop = {
+				'y': 0,
+				'x': spaceshiptop.x
+			}
 			topshots.push(shottytop)
 			socket.emit('game', {
 				"topshots":topshots
@@ -217,6 +226,7 @@ var update = function (modifier) {
 	// For shots coming from the bottom ship
 	if (bottomshotsocket!=-99)
 		bottomshots = bottomshotsocket;
+
 	var newbottomshots = []; //create new array to remove elemets outside of screen
 	bottomshots.forEach(function(shotter) {
 		shotter.y-=20;
@@ -228,6 +238,7 @@ var update = function (modifier) {
     // For shots coming from the top ship
 	if (topshotsocket!=-99)
 		topshots = topshotsocket;
+
 	var newtopshots = []; //create new array to remove elemets outside of screen
 	topshots.forEach(function(shottertop) {
 		shottertop.y+=20;
@@ -235,14 +246,6 @@ var update = function (modifier) {
 			newtopshots.push(shottertop);
 	});
 	topshots = newtopshots;
-
-/*	if (sockettop != -99)
-		if ((sockettop < spaceshiptop.x && topDirection == "left") || (sockettop > spaceshiptop.x && topDirection == "right") )
-			spaceshiptop.x = sockettop;*/
-
-	//if (socketbottom != -99)
-/*		if ((socketbottom < spaceship.x && botDirection == "left") || (socketbottom > spaceship.x && botDirection == "right") )
-			spaceship.x = socketbottom;*/
 
 };
 
@@ -259,7 +262,7 @@ var render = function () {
 	}
 	// Draw each shot
 	bottomshots.forEach(function(shotter) {
-		ctx.drawImage(shotImage,shotter.x+16, shotter.y);
+		ctx.drawImage(shotImage, shotter.x+16, shotter.y);
 		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){ // Confirmed kill
 			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
 			// Winner sends GameOver command

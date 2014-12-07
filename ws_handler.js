@@ -4,7 +4,6 @@ var io;
 var gameSocket;
 
 var sessionId;
-var connectCounter=0;
 var players = [];
 var userQueue = [];
 var clients = [];
@@ -22,16 +21,10 @@ exports.init = function(sio, socket) {
 	gameSocket.on('getSessionId', getSessionId);
 	gameSocket.on('gameOver', endGame);
 
-	gameSocket.on('connect', connect);
 	gameSocket.on('disconnect', disconnect);
 	gameSocket.on('game', game);
-	//socket.emit('playerId', connectCounter);
 	//gameSocket.on('userQueue',getuserQueue);
 	gameSocket.on('userHit',userHit);
-};
-
-function connect() {
-	console.log("Connect: " + this.id)
 };
 
 function disconnect() {
@@ -42,6 +35,7 @@ function disconnect() {
 	}
 }
 
+// Forward game change events to all users 
 function game (data) {
     io.sockets.emit('news', data);
 }
@@ -57,12 +51,11 @@ function userHit (data) {
   	userQueue.splice(0,1);
   }
 
- //io.sockets.emit('userQueuedata', userQueue);
 }
 
 // Add new user to game, if available, or queue
 function insertUser(user) {
-	console.log("Current players: "+players);
+	console.log("Current players: "+players.slice(1));
 	console.log("Inserting user: "+user);
 	var sessionId;
 	if (!players[1]) {
@@ -78,7 +71,6 @@ function insertUser(user) {
 		var sessionId = userQueue.push(user) + 2;
 	}
 	return sessionId;
-	//this.emit('playerId', { sessionId: sessionId });
 }
 // Remove user from list of players
 function removeUser(user) {
@@ -93,6 +85,7 @@ function removeUser(user) {
 	}
 	return sessionId;
 }
+// Finds a user's updated sessionKey 
 function getSessionId(data) {
 	var user = data.user;
 	var newUser = data.newUser;
