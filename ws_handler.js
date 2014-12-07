@@ -7,7 +7,8 @@ var db;
 var sessionId;
 var players = [];
 var userQueue = [];
-var clients = [];
+var clients = {};
+var gameStatus = 0;
 
 exports.init = function(sio, socket, mongodb) {
 	io = sio;
@@ -17,8 +18,8 @@ exports.init = function(sio, socket, mongodb) {
 	gameSocket.on('disconnect', disconnect);
 	gameSocket.on('getSessionId', getSessionId);
 	gameSocket.on('game', game);
-	//gameSocket.on('userHit',userHit);
 	gameSocket.on('gameOver', endGame);
+	gameSocket.on('getUsers', getUsers);
 };
 
 function disconnect() {
@@ -26,24 +27,21 @@ function disconnect() {
 	var id = this.id;
 	if (clients[id]) {
 		removeUser(clients[id]);
-		clients.splice(id, id);
+		delete clients[id];
 	}
 }
 
 // Forward game change events to all users 
 function game (data) {
-    io.sockets.emit('news', data);
+	if (gameStatus) {
+		if (data.gameover != null) {
+			console.log("Game has ended");
+			endGame({ sessionId: (3-data.gameover)});
+			gameStatus = 0;
+		}
+		io.sockets.emit('news', data);
+	}
 }
-
-/*function userHit (data) {
-	console.log("This is the data from user hit: " + data)
-  if(data == 2 ){
-  	userQueue.splice(1,1);
-  }
-  if(data == 1 ){
-  	userQueue.splice(0,1);
-  }
-}*/
 
 // Add new user to game, if available, or queue
 function insertUser(user) {
@@ -68,11 +66,11 @@ function insertUser(user) {
 function removeUser(user) {
 	console.log("Removing user: "+user);
 	sessionId = -1;
-	if (players.indexOf(user) > 0) {
+	if (players.indexOf(user) >= 0) {
 		var sessionId = players.indexOf(user);
 		delete players[sessionId];
 	}
-	else if (userQueue.indexOf(user) > 0) {
+	else if (userQueue.indexOf(user) >= 0) {
 		var sessionId = userQueue.indexOf(user);
 		userQueue.splice(sessionId, sessionId);
 	}
@@ -89,6 +87,7 @@ function getSessionId(data) {
 	}
 	clients[this.id] = user;
 	console.log("User: "+user+" has sessionId: "+sessionId);
+	gameStatus = 1;
 	this.emit('playerId', { sessionId: sessionId});
 }
 
@@ -105,10 +104,15 @@ function endGame(data) {
 	updateWinner(winner);
 }
 
-//Increment the winner's score
+// Increment the winner's score
 function updateWinner(user) {
 	var collection = db.get('highscores');
 	collection.update({ username: user }, { $inc : { score: 1}});
 	console.log("Updated winner score");
 }
 
+// A test function to view current data
+function getUsers() {
+	console.log("players: "+players);
+	console.log("Queue: "+userQueue);
+}

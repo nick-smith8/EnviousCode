@@ -27,7 +27,10 @@ $('.login-submit').click(function(event) {
   		window.location.href += 'lobby';
   	}
   	else
-  		alert(data);
+  		swal({
+  			title: data,
+  			timer: 3000
+  		});
   });
 
 });
@@ -56,11 +59,14 @@ $('.create-submit').click(function(event) {
 	$('.createform #newpass2').val('');
 	$.post( 'users/create_account', {user: user, pass: pass, confirmpass: confirmpass}, function(data) {
 		if (data === '0') {
-			alert('Account created successfully');
+			swal('Account created successfully');
 			$('.return-to-signin').click();
 		}
 		else
-			alert(data);
+			swal({
+				title: data,
+				timer: 3000
+			});
 	});
 })
 

@@ -95,15 +95,17 @@ var reset = function () {
 	shot.y = 573;
 	shottop.y = 0;
 	gameStatus = 1;
+	bottomshotsocket = -99;
+	topshotsocket = -99;
 };
 
+// Socket events
 socket.on('playerId', function(data) {
 	console.log('Received new sessionId: '+data.sessionId);
 	sessionId = data.sessionId;
 });
 
 socket.on('news',function(data) {
-	//console.log(data);
 	if (data.top !=null) {
 		sockettop = data.top.x;
 		topDirection = data.top.direction;
@@ -123,10 +125,50 @@ socket.on('news',function(data) {
 	if (data.topshots!=null) {
 		topshotsocket = data.topshots;
 	}
+
+	if (data.gameover!=null){
+		// Winner
+		if(sessionId == data.gameover){
+			swal({
+				title: "You win!",
+				timer: 3000
+			});
+		}
+		//Loser
+		else if(sessionId == (3 - data.gameover)){
+			// Return to lobby
+			socket.disconnect();
+			swal({
+				title: "You lose. You are being returned to the lobby",
+			}, 2000);
+			setTimeout(function() {
+				window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'lobby';
+			}, 3000);
+		}
+		//Everyone else
+		else {
+			var message = (data.gameover == 1 ? "Bottom" : "Top");
+			message += " player wins!\n";
+			if (sessionId > 3)
+				message += "You are now in position: "+(sessionId - 1);
+			else if (sessionId === 3)
+				message += "You are now the top player!";
+			swal({
+				title: message,
+				timer: 3000
+			});
+		}
+
+		//Get new sessionId
+		socket.emit('getSessionId', {
+			user: username,
+			newUser : 0
+		});
+	}
+
 }); 
 
-// Socket events
-
+// Announce yourself to the server
 socket.emit('getSessionId', {
 	user: username,
 	newUser : 1
@@ -185,7 +227,6 @@ var update = function (modifier) {
 	}
 
 	if (32 in keysDown&&sessionId==1){ // Bottom player holding Space
-		console.log("PEW");
 		if (spacePressed == false && bottomshots.length < 3) {
 			var shotty = {
 				'y': 573,
@@ -256,27 +297,16 @@ var render = function () {
 	bottomshots.forEach(function(shotter) {
 		ctx.drawImage(shotImage, shotter.x+16, shotter.y);
 		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){ // Confirmed kill
+			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
 			if (gameStatus) {
-				ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
-				// Winner sends GameOver command
-				if(sessionId == 1){
-					socket.emit('gameOver', { sessionId: 2 });	
-				}
-				//Loser gets redirected
-				if(sessionId == 2){
-					// Return to lobby
-					socket.emit('disconnect', {});
-					window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'lobby';
-					alert("You lose. You have been returned to the lobby");
-				}
-				else{
-					//alert("Bottom player wins!!");
-				}
-				//Get new sessionId
-				socket.emit('getSessionId', {
-					user: username,
-					newUser : 0
+				//Send gameover, with winner's sessionId
+				socket.emit('game', {
+					"gameover":1
 				});
+				setTimeout(function() {
+					console.log("Reseting");
+					reset();
+				}, 5000);
 			}
 			gameStatus = 0;
 		}
@@ -284,19 +314,18 @@ var render = function () {
 
 	topshots.forEach(function(shottertop) {
 		ctx.drawImage(shotImage,shottertop.x+16, shottertop.y+30);
-		if(shottertop.y > 560 && shottertop.y < 600 && (shottertop.x) < (spaceship.x+10) && (shottertop.x) > (spaceship.x-10)){ 
+		if(shottertop.y > 560 && shottertop.y < 600 && (shottertop.x) < (spaceship.x+10) && (shottertop.x) > (spaceship.x-10)){ // Confirmed kill
 			socket.emit('userHit',1);
 			ctx.drawImage(explosionImage,spaceship.x,shottertop.y);
-			// console.log(shottertop.y);
-			// console.log(spaceship.x);
-			
-			console.log("Hit");
-			if(sessionId == 1){
-				alert("I'm sorry you have lost.  You will now be returned to the lobby");
-				window.location.replace("http://104.131.30.31/lobby");
-			}
-			else{
-				alert("Top player wins!!")
+			if(gameStatus) {
+				//Send gameover, with winner's sessionId
+				socket.emit('game', {
+					"gameover":2
+				});
+				setTimeout(function() {
+					console.log("Reseting");
+					reset();
+				}, 5000);
 			}
 		}
 	});
@@ -307,7 +336,6 @@ var main = function () {
 	var now = Date.now();
 	var delta = now - then;
 
-	//update(100);
 	update(delta / 1000);
 	render();
 
