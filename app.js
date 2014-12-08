@@ -1,12 +1,12 @@
 var express = require('express');
 var path = require('path');
+var fs = require('fs');
 var debug = require('debug')('enviousonline');
 
 //var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var config = require('./config');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -18,7 +18,12 @@ var db = monk('localhost:27017/eonline');
 
 var app = express();
 
-app.set('port', config.port);
+// Set port for Express and Socket.io
+app.locals.port = 3000;
+if (fs.existsSync('./config.js')) 
+    app.locals.port = require('./config').port || 3000;
+
+app.set('port', app.locals.port);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,8 +44,8 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.locals.basedir = config.user;
-app.locals.port = config.port;
+//app.locals.basedir = config.user;
+//app.locals.port = require('./config2').port || 3000;
 
 app.use('/', routes);
 app.use('/users', users);
