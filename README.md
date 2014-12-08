@@ -1,7 +1,11 @@
 ## Envious Online
-Content pending
 
-## Getting started
+## i. Repo Organization
+
+Contained is our node files which runs the game client and server side. It is split into 3 branches: master, GameEngine and SocketBranch which were used to work on different parts of the game simultaniously. 
+
+
+## ii., iii.  Fall 2014 Final Submission
 ``` bash
   $ [sudo] apt-get update
   $ [sudo] apt-get install nodejs npm
@@ -25,19 +29,9 @@ Access database with
   $ mongo
 ```
 ## Usage
-Deploy locally with
-``` bash
-  $ DEBUG=EnviousOnline ./bin/www
-```
-Access locally at 
-```
-  127.0.0.1:3000
-```
+
 Server hosts at [104.131.30.31](http://104.131.30.31/)
 
 
-## Coming soon
-* Adding UI skeleton (IN PROGRESS)
-* Sockets???
+## vi. Not using CI System.
 
-More to come. Promise!!
