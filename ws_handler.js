@@ -18,7 +18,7 @@ exports.init = function(sio, socket, mongodb) {
 	gameSocket.on('disconnect', disconnect);
 	gameSocket.on('getSessionId', getSessionId);
 	gameSocket.on('game', game);
-	gameSocket.on('gameOver', endGame);
+	gameSocket.on('gameOver', gameOver);
 	gameSocket.on('getUsers', getUsers);
 };
 
@@ -36,7 +36,7 @@ function game (data) {
 	if (gameStatus) {
 		if (data.gameover != null) {
 			console.log("Game has ended");
-			endGame({ sessionId: (3-data.gameover)});
+			gameOver({ sessionId: (3-data.gameover)});
 			gameStatus = 0;
 		}
 		io.sockets.emit('news', data);
@@ -92,7 +92,7 @@ function getSessionId(data) {
 }
 
 // Removes losing player and adds the top of the queue
-function endGame(data) {
+function gameOver(data) {
 	var loserId = data.sessionId;
 	if (players[loserId]) {
 		removeUser(players[loserId]); 
