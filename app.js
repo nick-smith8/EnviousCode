@@ -20,9 +20,8 @@ var app = express();
 
 // Set port for Express and Socket.io
 app.locals.port = 3000;
-if (fs.existsSync('./config.js'))
-    app.locals.port = require('./config').port || 3000;
-
+if (fs.existsSync(path.join(__dirname, 'config.js')))
+    app.locals.port = require(path.join(__dirname, 'config')).port || 3000;
 app.set('port', app.locals.port);
 
 // view engine setup
