@@ -1,5 +1,3 @@
-# !/ usr / bin / env nodejs;
-
 /**
  * @module ws_handler.js
  * @file This file manages server-side web-socket requests through socket.io
