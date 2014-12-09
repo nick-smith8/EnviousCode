@@ -1,15 +1,21 @@
+/**
+ * @file This file manages HTTP ajax requests to the database
+ */
+
 var express = require('express');
 var router = express.Router();
 
 /**
-  This file manages HTTP GET requests for database requests
-*/
-
+ * Log all requests
+ */
 router.use(function(req, res, next) {
   console.log(req.method, req.url, res.body);
   next();
 });
 
+/**
+ * Returns JSON high-scores from database
+ */
 router.get('/get_highscores', function(req, res) {
   var db = req.db;
   var collection = db.get('highscores');
@@ -18,12 +24,13 @@ router.get('/get_highscores', function(req, res) {
   });
 });
 
-// Validate new account values and insert if valid
+/**
+ * Validate new account values and insert if valid
+ */
 router.post('/create_account', function(req, res) {
   var user = req.body.user;
   var pass1 = req.body.pass;
   var pass2 = req.body.confirmpass;
-
   if (pass1 && pass2 && pass1 == pass2){
 	  var db = req.db;
 	  var collection = db.get('highscores');
@@ -52,7 +59,9 @@ router.post('/create_account', function(req, res) {
   	res.send("Invalid passwords received");
 });
 
-//Validate user login
+/**
+ * Validate user logins
+ */
 router.post('/login', function(req, res) {
 	var user = req.body.user;
 	var pass = req.body.pass;

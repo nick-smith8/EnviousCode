@@ -1,4 +1,10 @@
+/**
+ * @file Manages UI event interaction throughout the app
+ */
 
+/**
+ * Makes an AJAX call to get the highscore data and populates it visually
+ */
 $(document).ready(function() {
 	var tableContent = '';
 	$.getJSON( 'users/get_highscores', function(data) {
@@ -13,7 +19,9 @@ $(document).ready(function() {
 	});
 });
 
-//Confirm login
+/**
+ * Submit login attempt and act based on response
+ */
 $('.login-submit').click(function(event) {
   event.preventDefault();
   var user = $('.loginform #user').val();
@@ -35,19 +43,9 @@ $('.login-submit').click(function(event) {
 
 });
 
-$('.create-account').click(function(event) {
-  window.location.href += 'create';
-});
-
-$('.start-game').click(function(event) {
-  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'game';
-});
-
-$('.return-to-signin').click(function(event) {
-  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1);
-});
-
-//Confirm new account
+/**
+ * Submit new account request and act based on response
+ */
 $('.create-submit').click(function(event) {
 	event.preventDefault();
 	//Post go here
@@ -70,3 +68,23 @@ $('.create-submit').click(function(event) {
 	});
 })
 
+/**
+ * Directs to create account screen
+ */
+$('.create-account').click(function(event) {
+  window.location.href += 'create';
+});
+
+/**
+ * Directs to game screen
+ */
+$('.start-game').click(function(event) {
+  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'game';
+});
+
+/**
+ * Directs to sign-in screen
+ */
+$('.return-to-signin').click(function(event) {
+  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1);
+});

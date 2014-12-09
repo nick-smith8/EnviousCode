@@ -1,4 +1,32 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: public/js/game.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: public/js/game.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * @file Manages the game, including socket calls. Interprets input based on sessionId
  */
 
@@ -72,6 +100,9 @@ var spaceshiptop = {
 
 var bottomshots = []
 var topshots = []
+
+var userQueue = []
+
 var shot = {};
 var shottop = {};
 
@@ -110,13 +141,13 @@ socket.on('news',function(data) {
 	if (data.top !=null) {
 		sockettop = data.top.x;
 		topDirection = data.top.direction;
-		if ((sockettop < spaceshiptop.x && topDirection == "left") || (sockettop > spaceshiptop.x && topDirection == "right") )
+		if ((sockettop &lt; spaceshiptop.x &amp;&amp; topDirection == "left") || (sockettop > spaceshiptop.x &amp;&amp; topDirection == "right") )
 			spaceshiptop.x = sockettop;
 	}
 	if (data.bottom !=null) {
 		socketbottom = data.bottom.x;
 		botDirection = data.bottom.direction;
-		if ((socketbottom < spaceship.x && botDirection == "left") || (socketbottom > spaceship.x && botDirection == "right"))
+		if ((socketbottom &lt; spaceship.x &amp;&amp; botDirection == "left") || (socketbottom > spaceship.x &amp;&amp; botDirection == "right"))
 			spaceship.x = socketbottom;
 	}
 	if (data.bottomshots!=null) {
@@ -177,9 +208,9 @@ socket.emit('getSessionId', {
 
 // Update game objects
 var update = function (modifier) {
-	if (37 in keysDown && sessionId==2) { // Top player holding Left
+	if (37 in keysDown &amp;&amp; sessionId==2) { // Top player holding Left
 		spaceshiptop.x  = Math.floor(spaceshiptop.x - spaceshiptop.speed * modifier);
-		if(spaceshiptop.x < 0){
+		if(spaceshiptop.x &lt; 0){
 			spaceshiptop.x = 0;
 		} 
 		socket.emit('game', {
@@ -189,7 +220,7 @@ var update = function (modifier) {
 			}
 		});
 	}
-	if (39 in keysDown && sessionId==2) { // Top player holding Right
+	if (39 in keysDown &amp;&amp; sessionId==2) { // Top player holding Right
 		spaceshiptop.x = Math.floor(spaceshiptop.x + spaceshiptop.speed * modifier);
 		if(spaceshiptop.x > 1360){
 			spaceshiptop.x = 1360;
@@ -201,9 +232,9 @@ var update = function (modifier) {
 			}
 		});
 	}
-	if ((37 in keysDown) && sessionId==1) { // Bottom player holding Left
+	if ((37 in keysDown) &amp;&amp; sessionId==1) { // Bottom player holding Left
 		spaceship.x = Math.floor(spaceship.x - spaceship.speed * modifier);
-		if(spaceship.x < 0){
+		if(spaceship.x &lt; 0){
 			spaceship.x = 0;
 		} 
 		socket.emit('game', {
@@ -214,7 +245,7 @@ var update = function (modifier) {
 		});
 	}
 
-	if (39 in keysDown&&sessionId==1) { // Bottom player holding Right
+	if (39 in keysDown&amp;&amp;sessionId==1) { // Bottom player holding Right
 		spaceship.x = Math.floor(spaceship.x + spaceship.speed * modifier);
 		if(spaceship.x > 1360){
 			spaceship.x = 1360;
@@ -227,8 +258,8 @@ var update = function (modifier) {
 		});
 	}
 
-	if (32 in keysDown&&sessionId==1){ // Bottom player holding Space
-		if (spacePressed == false && bottomshots.length < 3) {
+	if (32 in keysDown&amp;&amp;sessionId==1){ // Bottom player holding Space
+		if (spacePressed == false &amp;&amp; bottomshots.length &lt; 3) {
 			var shotty = {
 				'y': 573,
 				'x': spaceship.x
@@ -242,8 +273,8 @@ var update = function (modifier) {
 	if (32 in keysDown) {
 		spacePressed = false;
 	}
-	if (32 in keysDown&&sessionId==2){ // Top player holding Space
-		if (vPressed == false && topshots.length < 3) {
+	if (32 in keysDown&amp;&amp;sessionId==2){ // Top player holding Space
+		if (vPressed == false &amp;&amp; topshots.length &lt; 3) {
 			var shottytop = {
 				'y': 0,
 				'x': spaceshiptop.x
@@ -276,7 +307,7 @@ var update = function (modifier) {
 	var newtopshots = []; //create new array to remove elemets outside of screen
 	topshots.forEach(function(shottertop) {
 		shottertop.y+=20;
-		if (shottertop.y < 650)
+		if (shottertop.y &lt; 650)
 			newtopshots.push(shottertop);
 	});
 	topshots = newtopshots;
@@ -297,7 +328,7 @@ var render = function () {
 	// Draw each shot
 	bottomshots.forEach(function(shotter) {
 		ctx.drawImage(shotImage, shotter.x+16, shotter.y);
-		if(shotter.y < 30 && shotter.y > -10 && (shotter.x) < (spaceshiptop.x+10) && (shotter.x) > (spaceshiptop.x-10)){ // Confirmed kill
+		if(shotter.y &lt; 30 &amp;&amp; shotter.y > -10 &amp;&amp; (shotter.x) &lt; (spaceshiptop.x+10) &amp;&amp; (shotter.x) > (spaceshiptop.x-10)){ // Confirmed kill
 			ctx.drawImage(explosionImage,spaceshiptop.x,shotter.y);
 			if (gameStatus) {
 				//Send gameover, with winner's sessionId
@@ -315,7 +346,7 @@ var render = function () {
 
 	topshots.forEach(function(shottertop) {
 		ctx.drawImage(shotImage,shottertop.x+16, shottertop.y+30);
-		if(shottertop.y > 560 && shottertop.y < 600 && (shottertop.x) < (spaceship.x+10) && (shottertop.x) > (spaceship.x-10)){ // Confirmed kill
+		if(shottertop.y > 560 &amp;&amp; shottertop.y &lt; 600 &amp;&amp; (shottertop.x) &lt; (spaceship.x+10) &amp;&amp; (shottertop.x) > (spaceship.x-10)){ // Confirmed kill
 			socket.emit('userHit',1);
 			ctx.drawImage(explosionImage,spaceship.x,shottertop.y);
 			if(gameStatus) {
@@ -353,3 +384,32 @@ requestAnimationFrame = w.requestAnimationFrame || w.webkitRequestAnimationFrame
 var then = Date.now();
 reset();
 main();
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#disconnect%250AIncrement%2520the%2520winner's%2520score%2520in%2520the%2520DB">disconnect
+Increment the winner's score in the DB</a></li><li><a href="global.html#disconnect%250ARemoves%2520user%2520id%2520and%2520calls%2520removeUser%2520upon%2520user%2520disconect">disconnect
+Removes user id and calls removeUser upon user disconect</a></li><li><a href="global.html#disconnect%250AShows%2520active%2520users,%2520for%2520testing%2520perposes">disconnect
+Shows active users, for testing perposes</a></li><li><a href="global.html#game%250AForward%2520game%2520change%2520event%2520to%2520other%2520users.%2520Initiates%2520game%2520end%2520if%2520data%2520includes%2520a%2520gameover">game
+Forward game change event to other users. Initiates game end if data includes a gameover</a></li><li><a href="global.html#gameOver%250ARemoves%2520losing%2520player%2520and%2520adds%2520new%2520player%2520from%2520the%2520queue">gameOver
+Removes losing player and adds new player from the queue</a></li><li><a href="global.html#getSessionId%250AFind%2520a%2520user's%2520sessionId%2520based%2520on%2520username.%2520Emit's%2520sessionId">getSessionId
+Find a user's sessionId based on username. Emit's sessionId</a></li><li><a href="global.html#insertUser">insertUser</a></li><li><a href="global.html#removeUser">removeUser</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-alpha11</a> on Mon Dec 08 2014 19:44:10 GMT-0500 (EST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
