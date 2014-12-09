@@ -7,7 +7,7 @@
  */
 $(document).ready(function() {
 	var tableContent = '';
-	$.getJSON( 'users/get_highscores', function(data) {
+	$.getJSON('users/get_highscores', function(data) {
 		highscoreData = data;
 		$.each(data, function() {
 			tableContent += '<tr>';
@@ -28,7 +28,7 @@ $('.login-submit').click(function(event) {
   var pass = $('.loginform #pass').val();
   $('.loginform #password').val('');
 
-  $.post( 'users/login', {user: user, pass: pass}, function(data) {
+  $.post('users/login', {user: user, pass: pass}, function(data) {
   	if (data === '0') {
   		// Load lobby
   		console.log('logged in');
@@ -55,7 +55,7 @@ $('.create-submit').click(function(event) {
     // Reset form
 	$('.createform #newpass1').val('');
 	$('.createform #newpass2').val('');
-	$.post( 'users/create_account', {user: user, pass: pass, confirmpass: confirmpass}, function(data) {
+	$.post('users/create_account', {user: user, pass: pass, confirmpass: confirmpass}, function(data) {
 		if (data === '0') {
 			swal('Account created successfully');
 			$('.return-to-signin').click();
@@ -66,7 +66,7 @@ $('.create-submit').click(function(event) {
 				timer: 3000
 			});
 	});
-})
+});
 
 /**
  * Directs to create account screen
@@ -79,12 +79,12 @@ $('.create-account').click(function(event) {
  * Directs to game screen
  */
 $('.start-game').click(function(event) {
-  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1) + 'game';
+  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'game';
 });
 
 /**
  * Directs to sign-in screen
  */
 $('.return-to-signin').click(function(event) {
-  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/')+1);
+  window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
 });

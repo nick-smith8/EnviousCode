@@ -1,5 +1,5 @@
 /**
- * @file This file routes pages to Jade 
+ * @file This file routes pages to Jade
  */
 
 var express = require('express');
@@ -32,7 +32,7 @@ router.get('/lobby', function(req, res) {
  */
 router.get('/game', function(req, res) {
   var username = req.cookies.username;
-  res.render('game', { username : username });
+  res.render('game', { username: username });
 });
 
 module.exports = router;

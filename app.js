@@ -20,7 +20,7 @@ var app = express();
 
 // Set port for Express and Socket.io
 app.locals.port = 3000;
-if (fs.existsSync('./config.js')) 
+if (fs.existsSync('./config.js'))
     app.locals.port = require('./config').port || 3000;
 
 app.set('port', app.locals.port);
@@ -89,6 +89,6 @@ var server = app.listen(app.get('port'), function() {
 var io = require('socket.io').listen(server);
 
 io.sockets.on('connection', function(socket) {
-    console.log("Connection Established");
+    console.log('Connection Established');
     ws_handler.init(io, socket, db);
 });
